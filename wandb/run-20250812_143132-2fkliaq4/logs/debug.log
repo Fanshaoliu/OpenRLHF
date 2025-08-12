@@ -1,0 +1,21 @@
+2025-08-12 14:31:32,950 INFO    MainThread:2669566 [wandb_setup.py:_flush():80] Current SDK version is 0.21.1
+2025-08-12 14:31:32,950 INFO    MainThread:2669566 [wandb_setup.py:_flush():80] Configure stats pid to 2669566
+2025-08-12 14:31:32,951 INFO    MainThread:2669566 [wandb_setup.py:_flush():80] Loading settings from /mnt/data/user/liu_shaofan/HF_CACHE/.config/wandb/settings
+2025-08-12 14:31:32,951 INFO    MainThread:2669566 [wandb_setup.py:_flush():80] Loading settings from /mnt/data/user/liu_shaofan/OpenRLHF/wandb/settings
+2025-08-12 14:31:32,951 INFO    MainThread:2669566 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-08-12 14:31:32,952 INFO    MainThread:2669566 [wandb_init.py:setup_run_log_directory():703] Logging user logs to /mnt/data/user/liu_shaofan/OpenRLHF/wandb/run-20250812_143132-2fkliaq4/logs/debug.log
+2025-08-12 14:31:32,954 INFO    MainThread:2669566 [wandb_init.py:setup_run_log_directory():704] Logging internal logs to /mnt/data/user/liu_shaofan/OpenRLHF/wandb/run-20250812_143132-2fkliaq4/logs/debug-internal.log
+2025-08-12 14:31:32,954 INFO    MainThread:2669566 [wandb_init.py:init():830] calling init triggers
+2025-08-12 14:31:32,954 INFO    MainThread:2669566 [wandb_init.py:init():835] wandb.init called with sweep_config: {}
+config: {'save_path': './checkpoint/llama3-8b-rm', 'save_steps': -1, 'logging_steps': 1, 'eval_steps': -1, 'ckpt_path': './ckpt/checkpoints_rm', 'max_ckpt_num': 3, 'max_ckpt_mem': 100000000.0, 'load_checkpoint': True, 'use_ds_universal_ckpt': False, 'disable_ds_ckpt': False, 'save_hf_ckpt': False, 'max_norm': 1.0, 'gradient_checkpointing': True, 'deepcompile': False, 'seed': 42, 'full_determinism': False, 'local_rank': 0, 'zero_stage': 3, 'bf16': True, 'zpg': 1, 'adam_offload': False, 'flash_attn': True, 'grad_accum_dtype': None, 'overlap_comm': False, 'gradient_checkpointing_use_reentrant': False, 'disable_fast_tokenizer': False, 'ds_tensor_parallel_size': 1, 'pretrain': '/mnt/data/user/liu_shaofan/HF_CACHE/Llama-3-8b-sft-mixture', 'value_head_prefix': 'score', 'ring_attn_size': 1, 'ring_head_stride': 1, 'load_in_4bit': False, 'lora_rank': 0, 'lora_alpha': 16, 'lora_dropout': 0, 'target_modules': 'all-linear', 'max_epochs': 1, 'aux_loss_coef': 0, 'compute_fp32_loss': False, 'margin_loss': False, 'learning_rate': 9e-06, 'lr_warmup_ratio': 0.03, 'lr_scheduler': 'cosine_with_min_lr', 'micro_train_batch_size': 1, 'train_batch_size': 256, 'loss': 'sigmoid', 'l2': 0.0, 'adam_betas': (0.9, 0.95), 'packing_samples': True, 'dataset': '/mnt/data/user/liu_shaofan/HF_CACHE/preference_dataset_mixture2_and_safe_pku', 'dataset_probs': None, 'eval_dataset': None, 'dataset_split': 'train', 'eval_split': 'train', 'max_samples': 1000000, 'prompt_key': None, 'chosen_key': 'chosen', 'rejected_key': 'rejected', 'input_template': None, 'apply_chat_template': True, 'tokenizer_chat_template': None, 'max_len': 8192, 'use_wandb': 'f4964340b710e6450355ca2bd2b2f29de3d86312', 'wandb_org': None, 'wandb_group': None, 'wandb_project': 'openrlhf_train_rm', 'wandb_run_name': 'rm_0812T14:27', 'use_tensorboard': None, 'use_ms': False, '_wandb': {}}
+2025-08-12 14:31:32,955 INFO    MainThread:2669566 [wandb_init.py:init():871] starting backend
+2025-08-12 14:31:33,169 INFO    MainThread:2669566 [wandb_init.py:init():874] sending inform_init request
+2025-08-12 14:31:33,186 INFO    MainThread:2669566 [wandb_init.py:init():882] backend started and connected
+2025-08-12 14:31:33,192 INFO    MainThread:2669566 [wandb_init.py:init():953] updated telemetry
+2025-08-12 14:31:33,221 INFO    MainThread:2669566 [wandb_init.py:init():977] communicating run to backend with 300.0 second timeout
+2025-08-12 14:31:34,232 INFO    MainThread:2669566 [wandb_init.py:init():1029] starting run threads in backend
+2025-08-12 14:31:34,471 INFO    MainThread:2669566 [wandb_run.py:_console_start():2494] atexit reg
+2025-08-12 14:31:34,472 INFO    MainThread:2669566 [wandb_run.py:_redirect():2342] redirect: wrap_raw
+2025-08-12 14:31:34,472 INFO    MainThread:2669566 [wandb_run.py:_redirect():2411] Wrapping output streams.
+2025-08-12 14:31:34,473 INFO    MainThread:2669566 [wandb_run.py:_redirect():2434] Redirects installed.
+2025-08-12 14:31:34,476 INFO    MainThread:2669566 [wandb_init.py:init():1075] run started, returning control to user process

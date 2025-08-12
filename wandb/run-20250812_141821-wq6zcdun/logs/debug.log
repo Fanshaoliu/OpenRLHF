@@ -1,0 +1,89 @@
+2025-08-12 14:18:21,840 INFO    MainThread:2597949 [wandb_setup.py:_flush():80] Current SDK version is 0.21.1
+2025-08-12 14:18:21,841 INFO    MainThread:2597949 [wandb_setup.py:_flush():80] Configure stats pid to 2597949
+2025-08-12 14:18:21,841 INFO    MainThread:2597949 [wandb_setup.py:_flush():80] Loading settings from /mnt/data/user/liu_shaofan/HF_CACHE/.config/wandb/settings
+2025-08-12 14:18:21,841 INFO    MainThread:2597949 [wandb_setup.py:_flush():80] Loading settings from /mnt/data/user/liu_shaofan/OpenRLHF/wandb/settings
+2025-08-12 14:18:21,842 INFO    MainThread:2597949 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-08-12 14:18:21,843 INFO    MainThread:2597949 [wandb_init.py:setup_run_log_directory():703] Logging user logs to /mnt/data/user/liu_shaofan/OpenRLHF/wandb/run-20250812_141821-wq6zcdun/logs/debug.log
+2025-08-12 14:18:21,844 INFO    MainThread:2597949 [wandb_init.py:setup_run_log_directory():704] Logging internal logs to /mnt/data/user/liu_shaofan/OpenRLHF/wandb/run-20250812_141821-wq6zcdun/logs/debug-internal.log
+2025-08-12 14:18:21,844 INFO    MainThread:2597949 [wandb_init.py:init():830] calling init triggers
+2025-08-12 14:18:21,845 INFO    MainThread:2597949 [wandb_init.py:init():835] wandb.init called with sweep_config: {}
+config: {'save_path': './checkpoint/llama3-8b-rm', 'save_steps': -1, 'logging_steps': 1, 'eval_steps': -1, 'ckpt_path': './ckpt/checkpoints_rm', 'max_ckpt_num': 3, 'max_ckpt_mem': 100000000.0, 'load_checkpoint': True, 'use_ds_universal_ckpt': False, 'disable_ds_ckpt': False, 'save_hf_ckpt': False, 'max_norm': 1.0, 'gradient_checkpointing': True, 'deepcompile': False, 'seed': 42, 'full_determinism': False, 'local_rank': 0, 'zero_stage': 3, 'bf16': True, 'zpg': 1, 'adam_offload': False, 'flash_attn': True, 'grad_accum_dtype': None, 'overlap_comm': False, 'gradient_checkpointing_use_reentrant': False, 'disable_fast_tokenizer': False, 'ds_tensor_parallel_size': 1, 'pretrain': '/mnt/data/user/liu_shaofan/HF_CACHE/Llama-3-8b-sft-mixture', 'value_head_prefix': 'score', 'ring_attn_size': 1, 'ring_head_stride': 1, 'load_in_4bit': False, 'lora_rank': 0, 'lora_alpha': 16, 'lora_dropout': 0, 'target_modules': 'all-linear', 'max_epochs': 1, 'aux_loss_coef': 0, 'compute_fp32_loss': False, 'margin_loss': False, 'learning_rate': 9e-06, 'lr_warmup_ratio': 0.03, 'lr_scheduler': 'cosine_with_min_lr', 'micro_train_batch_size': 1, 'train_batch_size': 256, 'loss': 'sigmoid', 'l2': 0.0, 'adam_betas': (0.9, 0.95), 'packing_samples': True, 'dataset': '/mnt/data/user/liu_shaofan/HF_CACHE/preference_dataset_mixture2_and_safe_pku', 'dataset_probs': None, 'eval_dataset': None, 'dataset_split': 'train', 'eval_split': 'train', 'max_samples': 1000000, 'prompt_key': None, 'chosen_key': 'chosen', 'rejected_key': 'rejected', 'input_template': None, 'apply_chat_template': True, 'tokenizer_chat_template': None, 'max_len': 8192, 'use_wandb': 'f4964340b710e6450355ca2bd2b2f29de3d86312', 'wandb_org': None, 'wandb_group': None, 'wandb_project': 'openrlhf_train_rm', 'wandb_run_name': 'rm_0812T14:12', 'use_tensorboard': None, 'use_ms': False, '_wandb': {}}
+2025-08-12 14:18:21,845 INFO    MainThread:2597949 [wandb_init.py:init():871] starting backend
+2025-08-12 14:18:22,060 INFO    MainThread:2597949 [wandb_init.py:init():874] sending inform_init request
+2025-08-12 14:18:22,075 INFO    MainThread:2597949 [wandb_init.py:init():882] backend started and connected
+2025-08-12 14:18:22,081 INFO    MainThread:2597949 [wandb_init.py:init():953] updated telemetry
+2025-08-12 14:18:22,114 INFO    MainThread:2597949 [wandb_init.py:init():977] communicating run to backend with 200.0 second timeout
+2025-08-12 14:18:52,755 INFO    Thread-9 (wrapped_target):2597949 [retry.py:__call__():173] [no run ID] Retry attempt failed:
+Traceback (most recent call last):
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+    sock = connection.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+    raise err
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+    sock.connect(sa)
+TimeoutError: timed out
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+    response = self._make_request(
+               ^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+    raise new_e
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+    self._validate_conn(conn)
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+    conn.connect()
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+    self.sock = sock = self._new_conn()
+                       ^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 212, in _new_conn
+    raise ConnectTimeoutError(
+urllib3.exceptions.ConnectTimeoutError: (<urllib3.connection.HTTPSConnection object at 0x7faa30507c50>, 'Connection to api.wandb.ai timed out. (connect timeout=20)')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+    resp = conn.urlopen(
+           ^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+    retries = retries.increment(
+              ^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7faa30507c50>, 'Connection to api.wandb.ai timed out. (connect timeout=20)'))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/miniconda3/lib/python3.12/site-packages/wandb/sdk/lib/retry.py", line 134, in __call__
+    result = self._call_fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/wandb/sdk/internal/internal_api.py", line 398, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/wandb/vendor/gql-0.2.0/wandb_gql/client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/wandb/sdk/lib/gql_request.py", line 58, in execute
+    request = self.session.post(self.url, **post_args)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 688, in send
+    raise ConnectTimeout(e, request=request)
+requests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7faa30507c50>, 'Connection to api.wandb.ai timed out. (connect timeout=20)'))
