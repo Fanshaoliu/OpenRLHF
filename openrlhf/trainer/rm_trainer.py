@@ -144,6 +144,20 @@ class RewardModelTrainer(ABC):
                     self.model, chosen_ids, c_mask, reject_ids, r_mask
                 )
 
+                # 注册嵌入层梯度钩子（捕获prompt的梯度）
+                def hook_fn_embed(grad):
+                    print("Prompt嵌入向量的梯度：", grad)
+                # self.model.embed_tokens.weight.register_hook(hook_fn_embed)
+
+                raw_model = self.model.module if hasattr(self.model, "module") else self.model
+                raw_model.embed_tokens.weight.register_hook(hook_fn_embed)
+
+
+                # # 注册输出层梯度钩子（捕获response的梯度）
+                # def hook_fn_output(grad):
+                #     print("Response对应的logits梯度：", grad)
+                # logits.register_hook(hook_fn_output)
+
                 if self.margin_loss:
                     margin = torch.tensor(margin).to(torch.cuda.current_device())
                 else:

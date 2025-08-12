@@ -151,5 +151,5 @@ core
 */checkpoint/*
 
 
-*.pyc
+*pyc
 *wandb/*

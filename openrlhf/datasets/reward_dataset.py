@@ -4,6 +4,7 @@ from torch.utils.data import Dataset
 
 from openrlhf.datasets.utils import exist_and_not_none
 from openrlhf.utils.utils import zero_pad_sequences
+from datasets import load_from_disk
 
 
 def preprocess_data(
@@ -84,15 +85,17 @@ class RewardDataset(Dataset):
             if tokenizer_chat_template:
                 self.tokenizer.chat_template = tokenizer_chat_template
 
+
         # Parallel loading datasets
         processed_dataset = dataset.map(
-            self.process_data, remove_columns=dataset.column_names, num_proc=num_processors
+            self.process_data, remove_columns=dataset.column_names, num_proc=num_processors, load_from_cache_file=True
         )
 
         # Filter out None values if necessary
-        processed_dataset = processed_dataset.filter(lambda x: x["prompt"] is not None)
+        # processed_dataset = processed_dataset.filter(lambda x: x["prompt"] is not None, load_from_cache_file=True)
 
-        # processed_dataset.save_to_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/preference_dataset_mixture2_and_safe_pku")
+        processed_dataset.save_to_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/")
+        processed_dataset = load_from_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_dataset")
 
         # Store the processed data in class attributes
         self.prompts = processed_dataset["prompt"]
