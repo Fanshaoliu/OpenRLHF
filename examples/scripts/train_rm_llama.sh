@@ -1,5 +1,3 @@
-export HUGGINGFACE_HUB_CACHE="/mnt/data/user/liu_shaofan/HF_CACHE"
-export HF_DATASETS_CACHE="/mnt/data/user/liu_shaofan/HF_CACHE/datasets_cache"
 export HOME="/mnt/data/user/liu_shaofan/HF_CACHE"
 
 set -x
@@ -10,7 +8,7 @@ openrlhf.cli.train_rm \
    --save_steps -1 \
    --logging_steps 1 \
    --eval_steps -1 \
-   --train_batch_size 256 \
+   --train_batch_size 128 \
    --micro_train_batch_size 1 \
    --pretrain $HOME/Llama-3-8b-sft-mixture \
    --bf16 \
@@ -18,7 +16,7 @@ openrlhf.cli.train_rm \
    --max_len 8192 \
    --zero_stage 3 \
    --learning_rate 9e-6 \
-   --dataset $HOME/preference_dataset_mixture2_and_safe_pku \
+   --dataset OpenRLHF/preference_dataset_mixture2_and_safe_pku \
    --apply_chat_template \
    --chosen_key chosen \
    --rejected_key rejected \

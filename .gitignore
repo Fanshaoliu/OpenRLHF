@@ -149,3 +149,7 @@ core
 *jianh*
 *test_scripts*
 */checkpoint/*
+
+
+*.pyc
+*wandb/*

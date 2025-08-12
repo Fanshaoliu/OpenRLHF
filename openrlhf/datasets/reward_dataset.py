@@ -92,6 +92,8 @@ class RewardDataset(Dataset):
         # Filter out None values if necessary
         processed_dataset = processed_dataset.filter(lambda x: x["prompt"] is not None)
 
+        # processed_dataset.save_to_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/preference_dataset_mixture2_and_safe_pku")
+
         # Store the processed data in class attributes
         self.prompts = processed_dataset["prompt"]
         self.chosens = processed_dataset["chosen"]
