@@ -150,7 +150,8 @@ class RewardModelTrainer(ABC):
                 # self.model.embed_tokens.weight.register_hook(hook_fn_embed)
 
                 raw_model = self.model.module if hasattr(self.model, "module") else self.model
-                raw_model.embed_tokens.weight.register_hook(hook_fn_embed)
+                embedding_layer = raw_model.model.model.embed_tokens  # 两层 model
+                embedding_layer.weight.register_hook(hook_fn_embed)
 
 
                 # # 注册输出层梯度钩子（捕获response的梯度）

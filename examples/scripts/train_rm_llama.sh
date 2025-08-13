@@ -16,16 +16,16 @@ openrlhf.cli.train_rm \
    --max_len 8192 \
    --zero_stage 3 \
    --learning_rate 9e-6 \
-   --dataset OpenRLHF/preference_dataset_mixture2_and_safe_pku \
+   --dataset $HOME/datasets--OpenRLHF--preference_dataset_mixture2_and_safe_pku \
    --apply_chat_template \
    --chosen_key chosen \
    --rejected_key rejected \
    --flash_attn \
    --load_checkpoint \
    --packing_samples \
-   --gradient_checkpointing \
-   --use_wandb f4964340b710e6450355ca2bd2b2f29de3d86312 
+   --gradient_checkpointing 
 EOF
+# --use_wandb f4964340b710e6450355ca2bd2b2f29de3d86312 
      # --use_wandb [WANDB_TOKENS] or True (use wandb login command)
      # --packing_samples
 

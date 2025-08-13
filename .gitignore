@@ -150,6 +150,6 @@ core
 *test_scripts*
 */checkpoint/*
 
-
-*pyc
+__pycache__
+*.pyc
 *wandb/*

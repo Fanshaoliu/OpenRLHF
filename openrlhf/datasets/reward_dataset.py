@@ -87,15 +87,15 @@ class RewardDataset(Dataset):
 
 
         # Parallel loading datasets
-        processed_dataset = dataset.map(
-            self.process_data, remove_columns=dataset.column_names, num_proc=num_processors, load_from_cache_file=True
-        )
+        # processed_dataset = dataset.map(
+        #     self.process_data, remove_columns=dataset.column_names, num_proc=num_processors, load_from_cache_file=True
+        # )
 
         # Filter out None values if necessary
         # processed_dataset = processed_dataset.filter(lambda x: x["prompt"] is not None, load_from_cache_file=True)
 
-        processed_dataset.save_to_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/")
-        processed_dataset = load_from_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_dataset")
+        # processed_dataset.save_to_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/")
+        processed_dataset = load_from_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data")
 
         # Store the processed data in class attributes
         self.prompts = processed_dataset["prompt"]
