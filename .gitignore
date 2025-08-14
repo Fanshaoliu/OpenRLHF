@@ -1,3 +1,17 @@
+# 忽略checkpoint目录
+checkpoint/
+
+# 忽略output目录
+output/
+
+# 忽略Python编译生成的pyc文件和__pycache__目录
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 忽略nohup.out文件
+nohup.out
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
