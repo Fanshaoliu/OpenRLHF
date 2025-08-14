@@ -1,22 +1,21 @@
-export HOME="/mnt/data/user/liu_shaofan/HF_CACHE"
-
+export HF_ENDPOINT=https://hf-mirror.com
 set -x
 
 read -r -d '' training_commands <<EOF
 openrlhf.cli.train_rm \
-   --save_path ./checkpoint/llama3-8b-rm \
+   --save_path ./checkpoint/Qwen2.5-3B-rm \
    --save_steps -1 \
    --logging_steps 1 \
    --eval_steps -1 \
-   --train_batch_size 128 \
+   --train_batch_size 256 \
    --micro_train_batch_size 1 \
-   --pretrain $HOME/Llama-3-8b-sft-mixture \
+   --pretrain /mnt/data/models/pretrain_models/Qwen2.5-3B/ \
    --bf16 \
    --max_epochs 1 \
-   --max_len 8192 \
+   --max_len 8096 \
    --zero_stage 3 \
    --learning_rate 9e-6 \
-   --dataset $HOME/datasets--OpenRLHF--preference_dataset_mixture2_and_safe_pku \
+   --dataset OpenRLHF/preference_dataset_mixture2_and_safe_pku \
    --apply_chat_template \
    --chosen_key chosen \
    --rejected_key rejected \
@@ -33,3 +32,8 @@ EOF
 if [[ ${1} != "slurm" ]]; then
     deepspeed --module $training_commands
 fi
+
+
+export HF_HOME=/mnt/data/user/liu_shaofan/HF_CACHE
+export HUGGINGFACE_HUB_CACHE=/mnt/data/user/liu_shaofan/HF_CACHE/hf_models_cache
+export HF_DATASETS_CACHE=/mnt/data/user/liu_shaofan/HF_CACHE/hf_datasets_cache

@@ -1,4 +1,6 @@
-import os
+import csv
+import numpy as np
+import os, json
 from abc import ABC
 
 import torch
@@ -119,6 +121,150 @@ class RewardModelTrainer(ABC):
         epoch_bar = tqdm(range(start_epoch, self.epochs), desc="Train epoch", disable=not self.strategy.is_rank_0())
         acc_sum = 0
         loss_sum = 0
+        
+        grad_save_path = '/mnt/data/user/liu_shaofan/OpenRLHF/output/output.jsonl'
+        csv_path = '/mnt/data/user/liu_shaofan/OpenRLHF/output/output.csv'
+
+        def make_grad_hook(input_ids):
+            def hook_fn(grad_weight):
+                # grad_weight: (vocab_size, hidden_dim)
+                # --- 替换用的代码段（把原来的 batch_grads 写 jsonl 的部分替换成下面） ---
+                # 如果 csv 不存在则写 header
+                write_header = not os.path.exists(csv_path)
+
+                num_segments = 10  # prompt/response 各分 10 段
+
+                def segment_average(values, n_segments):
+                    L = len(values)
+                    if L == 0:
+                        return [0.0] * n_segments
+                    seg_avgs = []
+                    for i in range(n_segments):
+                        start = int(np.floor(i * L / n_segments))
+                        end   = int(np.floor((i + 1) * L / n_segments))
+                        if start >= L or end <= start:
+                            seg_avgs.append(0.0)
+                        else:
+                            seg_avgs.append(float(np.mean(values[start:end])))
+                    return seg_avgs
+
+                # 准备 labels（CSV 的列头，顺序固定）
+                labels = []
+                labels.append("<|im_start|>1")
+                labels.append("i_s1")
+                labels.append("<|im_end|>1")
+                labels.append("<|im_start|>2")
+                for i in range(num_segments):
+                    labels.append(f"p_s{i+1}")
+                labels.append("<|im_end|>2")
+                labels.append("<|im_start|>3")
+                for i in range(num_segments):
+                    labels.append(f"r_s{i+1}")
+                labels.append("<|im_end|>3")
+                labels.append("<|endoftext|>")
+
+                # 为 batch 中每个序列构造一行（长度 28）
+                rows_to_write = []
+                for seq in input_ids:
+                    # 收集 token 文本与对应的 grad norm
+                    token_texts = []
+                    token_grads = []
+                    for token_id in seq:
+                        # token_id 可能是 tensor，也可能是 python int
+                        if hasattr(token_id, "item"):
+                            tid = int(token_id.item())
+                        else:
+                            tid = int(token_id)
+                        # grad_weight[tid] -> 梯度向量 (tensor)
+                        grad_vec = grad_weight[tid]
+                        # 有时 grad_vec 在 GPU 上，直接 norm().item() 通常可用；若报错可改为 grad_vec.cpu().norm().item()
+                        grad_norm = float(grad_vec.norm().item())
+                        token_texts.append(self.tokenizer.decode([tid], skip_special_tokens=False))
+                        token_grads.append(grad_norm)
+
+                    # 找出所有分隔符出现的位置（按出现顺序）
+                    im_start_idxs = [i for i, t in enumerate(token_texts) if t == "<|im_start|>"]
+                    im_end_idxs   = [i for i, t in enumerate(token_texts) if t == "<|im_end|>"]
+                    try:
+                        eot_idx = token_texts.index("<|endoftext|>")
+                    except ValueError:
+                        eot_idx = len(token_texts) - 1
+
+                    # 根据出现次数取前三个（若不足则用空段 / 0 填充）
+                    if len(im_start_idxs) >= 3 and len(im_end_idxs) >= 3:
+                        s1, s2, s3 = im_start_idxs[0], im_start_idxs[1], im_start_idxs[2]
+                        e1, e2, e3 = im_end_idxs[0],   im_end_idxs[1],   im_end_idxs[2]
+                    else:
+                        # 若不满足三对分隔符，尽量容错：把 values 填 0（保证每条输出都是 28 列）
+                        # 你可以改这里的容错策略为跳过该样本
+                        rows_to_write.append([0.0] * 28)
+                        continue
+
+                    # 提取阶段 token 的梯度（不包含分隔符本身）
+                    instruct_tokens = token_grads[s1+1 : e1] if e1 > s1+1 else []
+                    prompt_tokens   = token_grads[s2+1 : e2] if e2 > s2+1 else []
+                    response_tokens = token_grads[s3+1 : e3] if e3 > s3+1 else []
+
+                    # 阶段整体平均
+                    instruct_avg = float(np.mean(instruct_tokens)) if len(instruct_tokens) > 0 else 0.0
+                    prompt_avg   = float(np.mean(prompt_tokens))   if len(prompt_tokens)   > 0 else 0.0
+                    response_avg = float(np.mean(response_tokens)) if len(response_tokens) > 0 else 0.0
+
+                    # prompt / response 各自分段 10 段平均
+                    prompt_seg_avg   = segment_average(prompt_tokens, num_segments)
+                    response_seg_avg = segment_average(response_tokens, num_segments)
+
+                    # 安全获取特殊标记位置的梯度（若索引越界返回 0）
+                    def safe_get(idx):
+                        if 0 <= idx < len(token_grads):
+                            return token_grads[idx]
+                        return 0.0
+
+                    grad_s1 = safe_get(s1); grad_e1 = safe_get(e1)
+                    grad_s2 = safe_get(s2); grad_e2 = safe_get(e2)
+                    grad_s3 = safe_get(s3); grad_e3 = safe_get(e3)
+                    grad_eot = safe_get(eot_idx)
+
+                    # 组装 28 个值（顺序与 labels 一致）
+                    vals = []
+                    vals.append(grad_s1)            # <|im_start|>1
+                    vals.append(instruct_avg)       # i_s1
+                    vals.append(grad_e1)            # <|im_end|>1
+
+                    vals.append(grad_s2)            # <|im_start|>2
+                    vals.extend(prompt_seg_avg)     # p_s1..p_s10
+                    vals.append(grad_e2)            # <|im_end|>2
+
+                    vals.append(grad_s3)            # <|im_start|>3
+                    vals.extend(response_seg_avg)   # r_s1..r_s10
+                    vals.append(grad_e3)            # <|im_end|>3
+
+                    vals.append(grad_eot)           # <|endoftext|>
+
+                    # 最后长度保证
+                    if len(vals) != 28:
+                        # 容错：若长度不对，补 0 到 28
+                        if len(vals) < 28:
+                            vals.extend([0.0] * (28 - len(vals)))
+                        else:
+                            vals = vals[:28]
+
+                    rows_to_write.append(vals)
+
+                # 写入 CSV（只在 rank 0 写，避免多进程冲突）
+                # if int(os.environ.get("RANK", 0)) == 0 and rows_to_write:
+                if rows_to_write:
+                    # rows_to_write_group_mean = np.mean(rows_to_write_group, axis=1).tolist()
+                    with open(csv_path, "a", newline="", encoding="utf-8") as cf:
+                        writer = csv.writer(cf)
+                        if write_header:
+                            writer.writerow(labels)
+                        for row in rows_to_write:
+                            writer.writerow([f"{float(v):.8g}" for v in row])
+                # --- end replacement ---
+
+            return hook_fn
+            
         for epoch in range(start_epoch, self.epochs):
             if isinstance(self.train_dataloader.sampler, DistributedSampler):
                 self.train_dataloader.sampler.set_epoch(
@@ -140,24 +286,15 @@ class RewardModelTrainer(ABC):
                 reject_ids = reject_ids.squeeze(1).to(torch.cuda.current_device())
                 r_mask = r_mask.squeeze(1).to(torch.cuda.current_device())
 
+                if step%100==0:
+                    raw_model = self.model.module if hasattr(self.model, "module") else self.model
+                    embedding_layer = raw_model.model.embed_tokens
+                    embedding_layer.weight.register_hook(make_grad_hook(chosen_ids))
+
                 chosen_reward, reject_reward, aux_loss = self.concatenated_forward(
                     self.model, chosen_ids, c_mask, reject_ids, r_mask
                 )
 
-                # 注册嵌入层梯度钩子（捕获prompt的梯度）
-                def hook_fn_embed(grad):
-                    print("Prompt嵌入向量的梯度：", grad)
-                # self.model.embed_tokens.weight.register_hook(hook_fn_embed)
-
-                raw_model = self.model.module if hasattr(self.model, "module") else self.model
-                embedding_layer = raw_model.model.model.embed_tokens  # 两层 model
-                embedding_layer.weight.register_hook(hook_fn_embed)
-
-
-                # # 注册输出层梯度钩子（捕获response的梯度）
-                # def hook_fn_output(grad):
-                #     print("Response对应的logits梯度：", grad)
-                # logits.register_hook(hook_fn_output)
 
                 if self.margin_loss:
                     margin = torch.tensor(margin).to(torch.cuda.current_device())
