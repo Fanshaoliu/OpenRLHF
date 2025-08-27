@@ -1,0 +1,11 @@
+================================================================================
+[0] CHOSEN ↓
+<|start_header_id|>assistant<|end_header_id|>
+
+Hmm. Well traditionally, in some regions they celebrate the feast of St. Nicholas on December 6th, and the following day on December 7th is Christmas. So those are two days of celebration.  In other regions, the first day of the festivities is more specifically Christmastime on December 25th.<|eot_id|> <|end_of_text|>
+
+[0] REJECT ↓
+<|start_header_id|>assistant<|end_header_id|>
+
+Well, some of the older parts of Amsterdam have charming little streets with lots of traditional Dutch architecture, and right now it’s decorated with Christmas lights and white twinkly trees.  This street can be covered in a thick snow from December until March.  People go window shopping on this street, and shop for chocolate and Christmas presents in the stores.  They also have several Christmas markets around the city, where vendors sell all sorts of things like fresh ornaments, Christmas sweets, and candles.<|eot_id|> <|end_of_text|>
+

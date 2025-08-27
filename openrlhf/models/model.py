@@ -172,6 +172,8 @@ def _get_reward_model(base_pretrained_model, base_llm_model, value_head_prefix="
 
             self.value_head_prefix = value_head_prefix
             setattr(self, value_head_prefix, nn.Linear(config.hidden_size, 1, bias=False))
+            self.log_y_r_head_prefix = "y_r_score"
+            setattr(self, self.log_y_r_head_prefix, nn.Linear(config.hidden_size, 1, bias=False))
 
             self.packing_samples = packing_samples
 
@@ -193,6 +195,7 @@ def _get_reward_model(base_pretrained_model, base_llm_model, value_head_prefix="
             ring_attn_group=None,
             pad_sequence=False,
             packed_seq_lens=None,
+            **kwargs
         ) -> torch.Tensor:
             batch, seqlen = input_ids.size()
             eos_indices = attention_mask.size(1) - 1 - attention_mask.long().fliplr().argmax(dim=1, keepdim=True)
@@ -208,18 +211,26 @@ def _get_reward_model(base_pretrained_model, base_llm_model, value_head_prefix="
                 position_ids.masked_fill_(attention_mask == 0, 1)
 
             outputs = getattr(self, self.base_model_prefix)(
-                input_ids, attention_mask=forward_attention_mask, position_ids=position_ids
+                input_ids, attention_mask=forward_attention_mask, position_ids=position_ids, **kwargs
             )
             last_hidden_states = outputs["last_hidden_state"]
 
+            # hidden_states = outputs['hidden_states'] if 'hidden_states' in outputs else None
+
             values = getattr(self, self.value_head_prefix)(last_hidden_states).squeeze(-1)
+            log_y_r_values = getattr(self, self.log_y_r_head_prefix)(last_hidden_states).squeeze(-1)            
 
             if self.packing_samples:
                 values = gather_and_pad_tensor(values, ring_attn_group, ring_attn_pad_len, indices, batch, seqlen)
+                log_y_r_values = gather_and_pad_tensor(log_y_r_values, ring_attn_group, ring_attn_pad_len, indices, batch, seqlen)
             reward = values.gather(dim=1, index=eos_indices).squeeze(1)
+            log_y_r_values_reward = log_y_r_values.gather(dim=1, index=eos_indices).squeeze(1)
 
             if not self.training and self.normalize_reward:
                 reward = (reward - self.mean) / self.std
+                log_y_r_values_reward = (log_y_r_values_reward - self.mean) / self.std
+            outputs['reward'] = reward
+            outputs['log_y_r_values_reward'] = log_y_r_values_reward
 
             return (reward, outputs) if return_output else reward
 

@@ -1,0 +1,745 @@
+nohup: ignoring input
++ read -r -d '' training_commands
++ [[ '' != \s\l\u\r\m ]]
++ deepspeed --master_port 29501 --module openrlhf.cli.train_sft --max_len 8192 --dataset Open-Orca/OpenOrca --input_key question --output_key response --train_batch_size 256 --micro_train_batch_size 2 --max_samples 500000 --pretrain meta-llama/Llama-3.2-1B --save_path ./checkpoint/llama3.2-1B-sft --save_steps -1 --logging_steps 1 --eval_steps -1 --zero_stage 2 --max_epochs 1 --bf16 --flash_attn --learning_rate 5e-6 --load_checkpoint --packing_samples --gradient_checkpointing
+[2025-08-18 12:17:51,605] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:17:53,920] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:17:54,599] [WARNING] [runner.py:220:fetch_hostfile] Unable to find hostfile, will proceed with training with local resources only.
+[2025-08-18 12:17:54,600] [INFO] [runner.py:610:main] cmd = /opt/miniconda3/bin/python -u -m deepspeed.launcher.launch --world_info=eyJsb2NhbGhvc3QiOiBbMCwgMSwgMiwgMywgNCwgNSwgNiwgN119 --master_addr=127.0.0.1 --master_port=29501 --module --enable_each_rank_log=None openrlhf.cli.train_sft --max_len 8192 --dataset Open-Orca/OpenOrca --input_key question --output_key response --train_batch_size 256 --micro_train_batch_size 2 --max_samples 500000 --pretrain meta-llama/Llama-3.2-1B --save_path ./checkpoint/llama3.2-1B-sft --save_steps -1 --logging_steps 1 --eval_steps -1 --zero_stage 2 --max_epochs 1 --bf16 --flash_attn --learning_rate 5e-6 --load_checkpoint --packing_samples --gradient_checkpointing
+[2025-08-18 12:17:56,248] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:17:58,884] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:17:59,549] [INFO] [launch.py:146:main] WORLD INFO DICT: {'localhost': [0, 1, 2, 3, 4, 5, 6, 7]}
+[2025-08-18 12:17:59,550] [INFO] [launch.py:152:main] nnodes=1, num_local_procs=8, node_rank=0
+[2025-08-18 12:17:59,550] [INFO] [launch.py:163:main] global_rank_mapping=defaultdict(<class 'list'>, {'localhost': [0, 1, 2, 3, 4, 5, 6, 7]})
+[2025-08-18 12:17:59,551] [INFO] [launch.py:164:main] dist_world_size=8
+[2025-08-18 12:17:59,551] [INFO] [launch.py:168:main] Setting CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+[2025-08-18 12:17:59,552] [INFO] [launch.py:256:main] process 18807 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=0', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,554] [INFO] [launch.py:256:main] process 18808 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=1', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,555] [INFO] [launch.py:256:main] process 18809 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=2', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,555] [INFO] [launch.py:256:main] process 18811 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=3', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,556] [INFO] [launch.py:256:main] process 18812 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=4', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,558] [INFO] [launch.py:256:main] process 18813 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=5', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,559] [INFO] [launch.py:256:main] process 18814 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=6', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:17:59,559] [INFO] [launch.py:256:main] process 18815 spawned with command: ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=7', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing']
+[2025-08-18 12:18:04,876] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:04,947] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:05,167] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:05,393] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:05,634] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:05,651] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:05,656] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:05,680] [INFO] [real_accelerator.py:254:get_accelerator] Setting ds_accelerator to cuda (auto detect)
+[2025-08-18 12:18:06,481] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:06,532] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:06,690] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:06,802] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:06,963] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:07,122] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:07,123] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:07,269] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:07,346] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:07,461] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:07,562] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:07,602] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:07,907] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:07,923] [INFO] [comm.py:821:init_distributed] cdb=None
+[2025-08-18 12:18:07,923] [INFO] [comm.py:852:init_distributed] Initializing TorchBackend in DeepSpeed with backend nccl
+[2025-08-18 12:18:07,926] [INFO] [logging.py:107:log_dist] [Rank -1] [TorchCheckpointEngine] Initialized with serialization = False
+[2025-08-18 12:18:08,288] [INFO] [comm.py:821:init_distributed] cdb=None
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank6]:     sock = connection.create_connection(
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank6]:     raise err
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank6]:     sock.connect(sa)
+[rank6]: OSError: [Errno 101] Network is unreachable
+
+[rank6]: The above exception was the direct cause of the following exception:
+
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank6]:     response = self._make_request(
+[rank6]:                ^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank6]:     raise new_e
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank6]:     self._validate_conn(conn)
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank6]:     conn.connect()
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank6]:     self.sock = sock = self._new_conn()
+[rank6]:                        ^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank6]:     raise NewConnectionError(
+[rank6]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f12b4712f60>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank6]: The above exception was the direct cause of the following exception:
+
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank6]:     resp = conn.urlopen(
+[rank6]:            ^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank6]:     retries = retries.increment(
+[rank6]:               ^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank6]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank6]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f12b4712f60>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank6]: During handling of the above exception, another exception occurred:
+
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank6]:   File "<frozen runpy>", line 88, in _run_code
+[rank6]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank6]:     train(args)
+[rank6]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank6]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank6]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank6]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank6]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank6]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank6]:     for template in list_repo_templates(
+[rank6]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank6]:     return [
+[rank6]:            ^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank6]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank6]:     r = session.get(path, params=params, headers=headers)
+[rank6]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank6]:     return self.request("GET", url, **kwargs)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank6]:     resp = self.send(prep, **send_kwargs)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank6]:     r = adapter.send(request, **kwargs)
+[rank6]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank6]:     return super().send(request, *args, **kwargs)
+[rank6]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank6]:     raise ConnectionError(e, request=request)
+[rank6]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f12b4712f60>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: f816733e-c786-438c-ba68-127a051baff5)')
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank4]:     sock = connection.create_connection(
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank4]:     raise err
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank4]:     sock.connect(sa)
+[rank4]: OSError: [Errno 101] Network is unreachable
+
+[rank4]: The above exception was the direct cause of the following exception:
+
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank4]:     response = self._make_request(
+[rank4]:                ^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank4]:     raise new_e
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank4]:     self._validate_conn(conn)
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank4]:     conn.connect()
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank4]:     self.sock = sock = self._new_conn()
+[rank4]:                        ^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank4]:     raise NewConnectionError(
+[rank4]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f1cd42dcb00>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank4]: The above exception was the direct cause of the following exception:
+
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank4]:     resp = conn.urlopen(
+[rank4]:            ^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank4]:     retries = retries.increment(
+[rank4]:               ^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank4]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank4]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f1cd42dcb00>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank4]: During handling of the above exception, another exception occurred:
+
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank4]:   File "<frozen runpy>", line 88, in _run_code
+[rank4]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank4]:     train(args)
+[rank4]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank4]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank4]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank4]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank4]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank4]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank4]:     for template in list_repo_templates(
+[rank4]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank4]:     return [
+[rank4]:            ^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank4]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank4]:     r = session.get(path, params=params, headers=headers)
+[rank4]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank4]:     return self.request("GET", url, **kwargs)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank4]:     resp = self.send(prep, **send_kwargs)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank4]:     r = adapter.send(request, **kwargs)
+[rank4]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank4]:     return super().send(request, *args, **kwargs)
+[rank4]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank4]:     raise ConnectionError(e, request=request)
+[rank4]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f1cd42dcb00>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: 4c97fe97-52f8-41f1-9277-90d755f8258e)')
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank5]:     sock = connection.create_connection(
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank5]:     raise err
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank5]:     sock.connect(sa)
+[rank5]: OSError: [Errno 101] Network is unreachable
+
+[rank5]: The above exception was the direct cause of the following exception:
+
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank5]:     response = self._make_request(
+[rank5]:                ^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank5]:     raise new_e
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank5]:     self._validate_conn(conn)
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank5]:     conn.connect()
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank5]:     self.sock = sock = self._new_conn()
+[rank5]:                        ^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank5]:     raise NewConnectionError(
+[rank5]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7feb141b9a60>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank5]: The above exception was the direct cause of the following exception:
+
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank5]:     resp = conn.urlopen(
+[rank5]:            ^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank5]:     retries = retries.increment(
+[rank5]:               ^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank5]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank5]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7feb141b9a60>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank5]: During handling of the above exception, another exception occurred:
+
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank5]:   File "<frozen runpy>", line 88, in _run_code
+[rank5]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank5]:     train(args)
+[rank5]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank5]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank5]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank5]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank5]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank5]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank5]:     for template in list_repo_templates(
+[rank5]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank5]:     return [
+[rank5]:            ^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank5]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank5]:     r = session.get(path, params=params, headers=headers)
+[rank5]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank5]:     return self.request("GET", url, **kwargs)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank5]:     resp = self.send(prep, **send_kwargs)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank5]:     r = adapter.send(request, **kwargs)
+[rank5]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank5]:     return super().send(request, *args, **kwargs)
+[rank5]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank5]:     raise ConnectionError(e, request=request)
+[rank5]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7feb141b9a60>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: a2b43bff-bb6f-49a2-9585-27dfa5dfc879)')
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank7]:     sock = connection.create_connection(
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank7]:     raise err
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank7]:     sock.connect(sa)
+[rank7]: OSError: [Errno 101] Network is unreachable
+
+[rank7]: The above exception was the direct cause of the following exception:
+
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank7]:     response = self._make_request(
+[rank7]:                ^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank7]:     raise new_e
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank7]:     self._validate_conn(conn)
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank7]:     conn.connect()
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank7]:     self.sock = sock = self._new_conn()
+[rank7]:                        ^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank7]:     raise NewConnectionError(
+[rank7]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7feb603d46b0>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank7]: The above exception was the direct cause of the following exception:
+
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank7]:     resp = conn.urlopen(
+[rank7]:            ^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank7]:     retries = retries.increment(
+[rank7]:               ^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank7]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank7]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7feb603d46b0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank7]: During handling of the above exception, another exception occurred:
+
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank7]:   File "<frozen runpy>", line 88, in _run_code
+[rank7]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank7]:     train(args)
+[rank7]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank7]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank7]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank7]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank7]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank7]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank7]:     for template in list_repo_templates(
+[rank7]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank7]:     return [
+[rank7]:            ^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank7]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank7]:     r = session.get(path, params=params, headers=headers)
+[rank7]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank7]:     return self.request("GET", url, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank7]:     resp = self.send(prep, **send_kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank7]:     r = adapter.send(request, **kwargs)
+[rank7]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank7]:     return super().send(request, *args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank7]:     raise ConnectionError(e, request=request)
+[rank7]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7feb603d46b0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: c46ad0a5-7f8e-43c2-89f1-08f56451aa52)')
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank2]:     sock = connection.create_connection(
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank2]:     raise err
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank2]:     sock.connect(sa)
+[rank2]: OSError: [Errno 101] Network is unreachable
+
+[rank2]: The above exception was the direct cause of the following exception:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank2]:     response = self._make_request(
+[rank2]:                ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank2]:     raise new_e
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank2]:     self._validate_conn(conn)
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank2]:     conn.connect()
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank2]:     self.sock = sock = self._new_conn()
+[rank2]:                        ^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank2]:     raise NewConnectionError(
+[rank2]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7fee4006db20>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank2]: The above exception was the direct cause of the following exception:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank2]:     resp = conn.urlopen(
+[rank2]:            ^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank2]:     retries = retries.increment(
+[rank2]:               ^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank2]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank2]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fee4006db20>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank2]: During handling of the above exception, another exception occurred:
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank2]:   File "<frozen runpy>", line 88, in _run_code
+[rank2]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank2]:     train(args)
+[rank2]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank2]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank2]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank2]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank2]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank2]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank2]:     for template in list_repo_templates(
+[rank2]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank2]:     return [
+[rank2]:            ^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank2]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank2]:     r = session.get(path, params=params, headers=headers)
+[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank2]:     return self.request("GET", url, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank2]:     resp = self.send(prep, **send_kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank2]:     r = adapter.send(request, **kwargs)
+[rank2]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank2]:     return super().send(request, *args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank2]:     raise ConnectionError(e, request=request)
+[rank2]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7fee4006db20>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: 1a9a90da-4a54-46e8-b605-e24666ae2d40)')
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank0]:     sock = connection.create_connection(
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank0]:     raise err
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank0]:     sock.connect(sa)
+[rank0]: OSError: [Errno 101] Network is unreachable
+
+[rank0]: The above exception was the direct cause of the following exception:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank0]:     response = self._make_request(
+[rank0]:                ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank0]:     raise new_e
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank0]:     self._validate_conn(conn)
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank0]:     conn.connect()
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank0]:     self.sock = sock = self._new_conn()
+[rank0]:                        ^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank0]:     raise NewConnectionError(
+[rank0]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f4d9c419b50>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank0]: The above exception was the direct cause of the following exception:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank0]:     resp = conn.urlopen(
+[rank0]:            ^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank0]:     retries = retries.increment(
+[rank0]:               ^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank0]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank0]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f4d9c419b50>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank0]: During handling of the above exception, another exception occurred:
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[rank0]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank0]:     train(args)
+[rank0]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank0]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank0]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank0]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank0]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank0]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank0]:     for template in list_repo_templates(
+[rank0]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank0]:     return [
+[rank0]:            ^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank0]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank0]:     r = session.get(path, params=params, headers=headers)
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank0]:     return self.request("GET", url, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank0]:     resp = self.send(prep, **send_kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank0]:     r = adapter.send(request, **kwargs)
+[rank0]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank0]:     return super().send(request, *args, **kwargs)
+[rank0]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank0]:     raise ConnectionError(e, request=request)
+[rank0]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f4d9c419b50>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: 22f46416-bab2-4dea-81f8-b2d3c57d142b)')
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank1]:     sock = connection.create_connection(
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank1]:     raise err
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank1]:     sock.connect(sa)
+[rank1]: OSError: [Errno 101] Network is unreachable
+
+[rank1]: The above exception was the direct cause of the following exception:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank1]:     response = self._make_request(
+[rank1]:                ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank1]:     raise new_e
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank1]:     self._validate_conn(conn)
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank1]:     conn.connect()
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank1]:     self.sock = sock = self._new_conn()
+[rank1]:                        ^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank1]:     raise NewConnectionError(
+[rank1]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f235414dd30>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank1]: The above exception was the direct cause of the following exception:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank1]:     resp = conn.urlopen(
+[rank1]:            ^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank1]:     retries = retries.increment(
+[rank1]:               ^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank1]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank1]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f235414dd30>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank1]: During handling of the above exception, another exception occurred:
+
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank1]:   File "<frozen runpy>", line 88, in _run_code
+[rank1]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank1]:     train(args)
+[rank1]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank1]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank1]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank1]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank1]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank1]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank1]:     for template in list_repo_templates(
+[rank1]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank1]:     return [
+[rank1]:            ^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank1]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank1]:     r = session.get(path, params=params, headers=headers)
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank1]:     return self.request("GET", url, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank1]:     resp = self.send(prep, **send_kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank1]:     r = adapter.send(request, **kwargs)
+[rank1]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank1]:     return super().send(request, *args, **kwargs)
+[rank1]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank1]:     raise ConnectionError(e, request=request)
+[rank1]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f235414dd30>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: 140aa345-50d7-414b-b08e-feef7deeb48b)')
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 203, in _new_conn
+[rank3]:     sock = connection.create_connection(
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 85, in create_connection
+[rank3]:     raise err
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/connection.py", line 73, in create_connection
+[rank3]:     sock.connect(sa)
+[rank3]: OSError: [Errno 101] Network is unreachable
+
+[rank3]: The above exception was the direct cause of the following exception:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 790, in urlopen
+[rank3]:     response = self._make_request(
+[rank3]:                ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 491, in _make_request
+[rank3]:     raise new_e
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 467, in _make_request
+[rank3]:     self._validate_conn(conn)
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 1096, in _validate_conn
+[rank3]:     conn.connect()
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 611, in connect
+[rank3]:     self.sock = sock = self._new_conn()
+[rank3]:                        ^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connection.py", line 218, in _new_conn
+[rank3]:     raise NewConnectionError(
+[rank3]: urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPSConnection object at 0x7f2a2418dfa0>: Failed to establish a new connection: [Errno 101] Network is unreachable
+
+[rank3]: The above exception was the direct cause of the following exception:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 667, in send
+[rank3]:     resp = conn.urlopen(
+[rank3]:            ^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/connectionpool.py", line 844, in urlopen
+[rank3]:     retries = retries.increment(
+[rank3]:               ^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/urllib3/util/retry.py", line 515, in increment
+[rank3]:     raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+[rank3]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]: urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f2a2418dfa0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))
+
+[rank3]: During handling of the above exception, another exception occurred:
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank3]:   File "<frozen runpy>", line 88, in _run_code
+[rank3]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 285, in <module>
+[rank3]:     train(args)
+[rank3]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/cli/train_sft.py", line 36, in train
+[rank3]:     tokenizer = get_tokenizer(args.pretrain, model.model, "right", strategy, use_fast=not args.disable_fast_tokenizer)
+[rank3]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/mnt/data/user/liu_shaofan/OpenRLHF/openrlhf/utils/utils.py", line 25, in get_tokenizer
+[rank3]:     tokenizer = AutoTokenizer.from_pretrained(pretrain, trust_remote_code=True, use_fast=use_fast)
+[rank3]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 1114, in from_pretrained
+[rank3]:     return tokenizer_class.from_pretrained(pretrained_model_name_or_path, *inputs, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/tokenization_utils_base.py", line 1956, in from_pretrained
+[rank3]:     for template in list_repo_templates(
+[rank3]:                     ^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/transformers/utils/hub.py", line 167, in list_repo_templates
+[rank3]:     return [
+[rank3]:            ^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/hf_api.py", line 3177, in list_repo_tree
+[rank3]:     for path_info in paginate(path=tree_url, headers=headers, params={"recursive": recursive, "expand": expand}):
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_pagination.py", line 36, in paginate
+[rank3]:     r = session.get(path, params=params, headers=headers)
+[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 602, in get
+[rank3]:     return self.request("GET", url, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 589, in request
+[rank3]:     resp = self.send(prep, **send_kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/sessions.py", line 703, in send
+[rank3]:     r = adapter.send(request, **kwargs)
+[rank3]:         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 96, in send
+[rank3]:     return super().send(request, *args, **kwargs)
+[rank3]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "/opt/miniconda3/lib/python3.12/site-packages/requests/adapters.py", line 700, in send
+[rank3]:     raise ConnectionError(e, request=request)
+[rank3]: requests.exceptions.ConnectionError: (MaxRetryError("HTTPSConnectionPool(host='huggingface.co', port=443): Max retries exceeded with url: /api/models/meta-llama/Llama-3.2-1B/tree/main/additional_chat_templates?recursive=False&expand=False (Caused by NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x7f2a2418dfa0>: Failed to establish a new connection: [Errno 101] Network is unreachable'))"), '(Request ID: 255932bf-1631-4e1b-b3e9-da6edfdd4783)')
+[rank0]:[W818 12:21:02.854230640 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank3]:[W818 12:21:03.531082158 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank6]:[W818 12:21:03.531213472 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank2]:[W818 12:21:03.533740182 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank5]:[W818 12:21:03.534654377 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank1]:[W818 12:21:03.535137754 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank4]:[W818 12:21:03.535285856 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank7]:[W818 12:21:03.535936875 ProcessGroupNCCL.cpp:1538] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[2025-08-18 12:21:06,589] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18807
+[2025-08-18 12:21:06,596] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18808
+[2025-08-18 12:21:06,654] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18809
+[2025-08-18 12:21:06,660] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18811
+[2025-08-18 12:21:06,665] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18812
+[2025-08-18 12:21:06,671] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18813
+[2025-08-18 12:21:06,672] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18814
+[2025-08-18 12:21:06,677] [INFO] [launch.py:319:sigkill_handler] Killing subprocess 18815
+[2025-08-18 12:21:06,683] [ERROR] [launch.py:325:sigkill_handler] ['/opt/miniconda3/bin/python', '-u', '-m', 'openrlhf.cli.train_sft', '--local_rank=7', '--max_len', '8192', '--dataset', 'Open-Orca/OpenOrca', '--input_key', 'question', '--output_key', 'response', '--train_batch_size', '256', '--micro_train_batch_size', '2', '--max_samples', '500000', '--pretrain', 'meta-llama/Llama-3.2-1B', '--save_path', './checkpoint/llama3.2-1B-sft', '--save_steps', '-1', '--logging_steps', '1', '--eval_steps', '-1', '--zero_stage', '2', '--max_epochs', '1', '--bf16', '--flash_attn', '--learning_rate', '5e-6', '--load_checkpoint', '--packing_samples', '--gradient_checkpointing'] exits with return code = 1

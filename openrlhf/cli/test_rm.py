@@ -71,32 +71,6 @@ def train(args):
         train_dataset.collate_fn,
     )
 
-    if getattr(args, "eval_dataset", None):
-        eval_data = blending_datasets(
-            args.eval_dataset,
-            None,  # No probability sampling for eval datasets
-            strategy,
-            dataset_split=args.eval_split,
-        )
-    else:
-        # Used for calculating mean/std for reward normalization
-        eval_data = train_data.select(range(min(args.max_samples, int(len(train_data) * 0.01))))
-
-    eval_dataset = RewardDataset(
-        eval_data,
-        tokenizer,
-        args.max_len,
-        strategy,
-        input_template=args.input_template,
-    )
-    eval_dataloader = strategy.setup_dataloader(
-        eval_dataset,
-        args.micro_train_batch_size,
-        True,
-        False,
-        eval_dataset.collate_fn,
-    )
-
     # scheduler
     num_update_steps_per_epoch = len(train_dataset) // args.train_batch_size
     max_steps = math.ceil(args.max_epochs * num_update_steps_per_epoch)
@@ -125,8 +99,6 @@ def train(args):
         consumed_samples = states["consumed_samples"]
         strategy.print(f"Loaded the checkpoint: {args.ckpt_path}, consumed_samples: {consumed_samples}")
 
-    os.makedirs(args.save_path, exist_ok=True)
-
     # batch_size here is micro_batch_size * 2
     # we use merged chosen + rejected response forward
     trainer = RewardModelTrainer(
@@ -134,8 +106,8 @@ def train(args):
         strategy=strategy,
         optim=optim,
         tokenizer=tokenizer,
-        train_dataloader=train_dataloader,
-        eval_dataloader=eval_dataloader,
+        train_dataloader=None,
+        eval_dataloader=None,
         scheduler=scheduler,
         max_norm=args.max_norm,
         max_epochs=args.max_epochs,
@@ -146,7 +118,37 @@ def train(args):
         save_hf_ckpt=args.save_hf_ckpt,
     )
 
-    trainer.fit(args, consumed_samples, num_update_steps_per_epoch)
+    # cnt = 0
+    # for data in train_dataloader:
+    #     chosen_ids, c_mask, reject_ids, r_mask, margin = data
+        
+    #     print("chosen_ids:", chosen_ids)
+    #     print("chosen_text:", tokenizer.batch_decode(chosen_ids, skip_special_tokens=False))
+    #     print("c_mask:", c_mask)
+    #     print("reject_ids:", reject_ids)
+    #     print("reject_text:", tokenizer.batch_decode(reject_ids, skip_special_tokens=False))
+    #     print("r_mask:", r_mask)
+    #     print("margin:", margin)
+    #     if cnt == 2:
+    #         break
+    #     cnt += 1
+
+    # eval_data = train_data.select(range(min(args.max_samples, int(len(train_data) * 0.01))))
+    # eval_dataset = RewardDataset(
+    #     eval_data,
+    #     tokenizer,
+    #     args.max_len,
+    #     strategy,
+    #     input_template=args.input_template,
+    # )
+    # eval_dataloader = strategy.setup_dataloader(
+    #     eval_dataset,
+    #     args.micro_train_batch_size,
+    #     True,
+    #     False,
+    #     eval_dataset.collate_fn,
+    # )
+    trainer.evaluate(train_dataloader, 0, model_name=args.pretrain.split('/')[-1], data_name=args.dataset.split('/')[-1], eval_result_path=args.dataset.split('/')[-1])
 
     # Save value_head_prefix
     strategy.print("Save value_head_prefix in config")
@@ -154,7 +156,7 @@ def train(args):
     unwrap_model.config.value_head_prefix = args.value_head_prefix
 
     # save model checkpoint after fitting on only rank0
-    strategy.save_model(model, tokenizer, args.save_path)
+    # strategy.save_model(model, tokenizer, args.save_path)
 
 
 if __name__ == "__main__":

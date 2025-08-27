@@ -1,5 +1,7 @@
 # 忽略checkpoint目录
 checkpoint/
+ckpt/
+data/
 
 # 忽略output目录
 output/

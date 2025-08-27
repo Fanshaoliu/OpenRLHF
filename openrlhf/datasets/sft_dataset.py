@@ -80,6 +80,9 @@ class SFTDataset(Dataset):
         )
         processed_dataset = processed_dataset.filter(lambda x: x["prompt"] is not None)
 
+        # processed_dataset.save_to_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/OpenOrca")
+        # processed_dataset = load_from_disk("/mnt/data/user/liu_shaofan/HF_CACHE/preprocessed_cache_data/OpenOrca")
+
         # Store the processed data in class attributes
         self.prompts = processed_dataset["prompt"]
         self.responses = processed_dataset["response"]
