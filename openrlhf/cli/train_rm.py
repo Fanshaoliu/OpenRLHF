@@ -74,8 +74,10 @@ def train(args):
     if getattr(args, "eval_dataset", None):
         eval_data = blending_datasets(
             args.eval_dataset,
-            None,  # No probability sampling for eval datasets
+            args.dataset_probs,
             strategy,
+            args.seed,
+            max_count=args.max_samples,
             dataset_split=args.eval_split,
         )
     else:
@@ -140,6 +142,8 @@ def train(args):
         max_norm=args.max_norm,
         max_epochs=args.max_epochs,
         lambda_cmi=args.lambda_cmi,
+        estimation_var_sample_num=args.estimation_var_sample_num,
+        estimation_var_sample_rate=args.estimation_var_sample_rate,
         clap_cap=args.clap_cap,
         loss=args.loss,
         disable_ds_ckpt=args.disable_ds_ckpt,
@@ -152,6 +156,7 @@ def train(args):
     strategy.print("Save value_head_prefix in config")
     unwrap_model = strategy._unwrap_model(model)
     unwrap_model.config.value_head_prefix = args.value_head_prefix
+    unwrap_model.config.log_y_r_head_prefix = "y_r_score"
 
     # save model checkpoint after fitting on only rank0
     strategy.save_model(model, tokenizer, args.save_path)
@@ -233,6 +238,9 @@ if __name__ == "__main__":
     parser.add_argument("--adam_betas", type=float, nargs=2, default=(0.9, 0.95), help="Betas for Adam optimizer")
     # CMI loss
     parser.add_argument("--lambda_cmi", type=float, default=0.0, help="Lambda for CMI loss")
+    # Estimation variance
+    parser.add_argument("--estimation_var_sample_num", type=int, default=0, help="Number of samples for estimation variance")
+    parser.add_argument("--estimation_var_sample_rate", type=float, default=0.0, help="Rate of samples for estimation variance")
     parser.add_argument("--clap_cap", type=float, default=1.0, help="Clipping value for CMI loss")
 
     # packing samples using Flash Attention2

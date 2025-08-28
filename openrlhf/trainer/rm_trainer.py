@@ -3,6 +3,7 @@ import os
 import json
 import torch
 import torch.nn.functional as F
+import torch.nn as nn
 import torch.distributed as dist
 from typing import List, Tuple, Optional
 import json, os
@@ -321,6 +322,8 @@ class RewardModelTrainer(ABC):
         max_norm=0.5,
         max_epochs: int = 2,
         lambda_cmi: float = 0.0,
+        estimation_var_sample_num: int = 0,
+        estimation_var_sample_rate: float = 0.0,
         clap_cap: float = 1.0,
         loss="sigmoid",
         disable_ds_ckpt=False,
@@ -340,7 +343,10 @@ class RewardModelTrainer(ABC):
         self.disable_ds_ckpt = disable_ds_ckpt
         self.save_hf_ckpt = save_hf_ckpt
         self.lambda_cmi = lambda_cmi
+        self.estimation_var_sample_num = estimation_var_sample_num
+        self.estimation_var_sample_rate = estimation_var_sample_rate
         self.clap_cap = clap_cap
+        self.apply_chat_template = getattr(self.strategy.args, "apply_chat_template", False)
 
         if loss == "sigmoid":
             self.loss_fn = PairWiseLoss()
@@ -443,8 +449,8 @@ class RewardModelTrainer(ABC):
                 r_mask = r_mask.squeeze(1).to(torch.cuda.current_device())
 
                 # [DEBUG] 打印数据
-                debug_preview_batch(self.tokenizer, chosen_ids, c_mask, reject_ids, r_mask,
-                                    n_preview=2, show_special=True)
+                # debug_preview_batch(self.tokenizer, chosen_ids, c_mask, reject_ids, r_mask,
+                #                     n_preview=2, show_special=True, file='output/data_log/text.txt')
 
                 chosen_reward, reject_reward, aux_loss, hidden_states = self.concatenated_forward(
                     self.model, chosen_ids, c_mask, reject_ids, r_mask
@@ -465,12 +471,10 @@ class RewardModelTrainer(ABC):
                 preference_loss = self.loss_fn(chosen_reward, reject_reward, margin)
                 
                 
-                # --- 关键：自动推断 prompt_len，并做 R-only 二次前向得到 a(R) ---
-                prompt_len = self.compute_prompt_len_by_pair(chosen_ids, c_mask, reject_ids, r_mask)  # [B]
+                # --- 关键：自动推断 response ，并做 R-only 二次前向得到 a(R) ---
                 a_logit = self.forward_R_only(
                     self.model,
-                    chosen_ids, c_mask, reject_ids, r_mask,
-                    prompt_len=prompt_len
+                    chosen_ids, c_mask, reject_ids, r_mask
                 )
 
                 # 条件互信息近似项：CE(y, σ(Δ)) - CE(y, σ(a))
@@ -486,6 +490,7 @@ class RewardModelTrainer(ABC):
 
                 # loss = preference_loss + aux_loss * self.args.aux_loss_coef + self.lambda_cmi * loss_cmi
                 loss = (1+self.lambda_cmi)*preference_loss - self.lambda_cmi * ce_a + aux_loss * self.args.aux_loss_coef
+
                 self.strategy.backward(loss, self.model, self.optimizer)
                 self.strategy.optimizer_step(self.optimizer, self.model, self.scheduler)
 
@@ -711,84 +716,62 @@ class RewardModelTrainer(ABC):
         )
         max_length = max(c_mask.shape[1], r_mask.shape[1])
         att_masks = torch.cat((pad_to_length(c_mask, max_length, 0), pad_to_length(r_mask, max_length, 0)), dim=0)
-        # if dist.get_rank() == 0:
-        #     print("chosen_ids shape:", chosen_ids.shape)
-        #     print("reject_ids shape:", reject_ids.shape)
-        #     print("c_mask shape:", c_mask.shape)
-        #     print("r_mask shape:", r_mask.shape)
-        #     print("Concatenated inputs shape:", inputs_ids.shape, att_masks.shape)
-        # hosen_ids shape: torch.Size([1, 96]) 
-        # reject_ids shape: torch.Size([1, 78])
-        # c_mask shape: torch.Size([1, 96])
-        # r_mask shape: torch.Size([1, 78])
-        # Concatenated inputs shape: torch.Size([2, 96]) torch.Size([2, 96])
 
         return inputs_ids, att_masks
 
     def forward_R_only(
         self,
         model,
-        chosen_ids, c_mask, reject_ids, r_mask,
-        prompt_len: torch.Tensor
+        chosen_ids, c_mask, reject_ids, r_mask
     ):
-        """
-        返回：a_logit = s_c^{R-only} - s_r^{R-only}  （不看 prompt 的 logit 差）
-        注意：这里不需要 hidden_states，减少开销。
-        """
-
         B = chosen_ids.shape[0]
-
-        chosen_ids_C, c_mask_C = self.extract_bos_plus_last_assistant(chosen_ids, c_mask)
-        reject_ids_R, r_mask_R = self.extract_bos_plus_last_assistant(reject_ids, r_mask)
+        chosen_ids_R_only, c_mask_R_only = self.extract_assistant_only_batch(chosen_ids, c_mask)
+        reject_ids_R_only, r_mask_R_only = self.extract_assistant_only_batch(reject_ids, r_mask)
+        # debug_preview_batch(self.tokenizer, chosen_ids_R_only, c_mask_R_only, reject_ids_R_only, r_mask_R_only, file='output/data_log/cliped_response.txt', show_special=True)
 
         # 先拿到拼接后的 input 与原始 mask
-        input_ids, att_masks = self.concatenated_inputs(chosen_ids_C, c_mask_C, reject_ids_R, r_mask_R)  # [2B, L]
+        input_ids, att_masks = self.concatenated_inputs(chosen_ids_R_only, c_mask_R_only, reject_ids_R_only, r_mask_R_only)  # [2B, L]
+
+
+
+        # # 1) 先得到 prompt-only 掩码（以 chosen 为例，reject 一样做一次）
+        # mask_P_only_c = self.build_prompt_only_mask_from_right(c_mask, c_mask_R_only)  # [B, Lc]
+        # mask_P_only_r = self.build_prompt_only_mask_from_right(r_mask, r_mask_R_only)  # [B, Lr]
+
+        # # 2) 在 prompt-only 上做 MC 随机丢弃（alpha 比例，N 次）
+        # alpha, N = 0.2, 4
+        # c_full_masks_list, _ = self.sample_random_prompt_drop_masks(c_mask, mask_P_only_c, alpha, N)
+        # r_full_masks_list, _ = self.sample_random_prompt_drop_masks(r_mask, mask_P_only_r, alpha, N)
+        # # 得到 N 组 (chosen_mask', reject_mask')，可配合同一对 (chosen_ids, reject_ids) 前向，估计二阶项里的 Var[b].
+
         
         # 为拼接后的前 B（chosen）与后 B（reject）分别屏蔽各自的 prompt
         att_masks_ro = att_masks.clone()
-        # att_masks_ro[:B] = self.zero_first_k_valid(att_masks_ro[:B], prompt_len)   # chosen 半批
-        # att_masks_ro[B:] = self.zero_first_k_valid(att_masks_ro[B:], prompt_len)   # reject 半批
 
         # 二次前向（R-only）：禁用 hidden_states 以节省显存
         rewards_ro, out_ro = model(
             input_ids,
             attention_mask=att_masks_ro,
             output_hidden_states=False,
-            return_output=True
+            return_output=True,
+            estimation_var_sample_num=0,
+            estimation_var_sample_rate=0
         )
-        s_c_ro = out_ro['log_y_r_values_reward'][:B]
-        s_r_ro = out_ro['log_y_r_values_reward'][B:]
-        a_logit = s_c_ro - s_r_ro
-        return a_logit
+        s_c_ro_a = out_ro['log_y_r_values_reward'][:B]
+        s_r_ro_a = out_ro['log_y_r_values_reward'][B:]
+        a_logit = s_c_ro_a - s_r_ro_a
+
+        if estimation_var_sample_num>0 and estimation_var_sample_rate!=0:
+            b_square = 0
+            for b_score in out_ro['b_score_reward']:
+                b_c_score = b_score[:B]
+                b_r_score = b_score[B:]
+                b_square += (b_c_score - b_r_score)**2
+
+            estimation_var = b_square / estimation_var_sample_num
+
+        return a_logit if estimation_var_sample_num==0 else a_logit, estimation_var
         
-    def compute_prompt_len_by_pair(self, chosen_ids, c_mask, reject_ids, r_mask):
-        """
-        chosen_ids, reject_ids: [B, L]  (Long)
-        c_mask, r_mask:        [B, L]  (0/1)
-        return: prompt_len     [B]     (Long)
-        """
-        B, L = chosen_ids.shape
-        prompt_len = torch.zeros(B, dtype=torch.long, device=chosen_ids.device)
-
-        for b in range(B):
-
-            c_seq = chosen_ids[b][c_mask[b].bool()]  # 有效 token 序列
-            r_seq = reject_ids[b][r_mask[b].bool()]
-            K = min(c_seq.numel(), r_seq.numel())
-            if K == 0:
-                prompt_len[b] = 0
-                continue
-            # 逐位比较前缀，直到首次不相等
-            eq = (c_seq[:K] == r_seq[:K])
-            # 找到第一个 False 的下标；若不存在，说明完整前缀相同
-            mismatch = (~eq).nonzero(as_tuple=False)
-            pl = int(mismatch[0]) if mismatch.numel() > 0 else K
-            prompt_len[b] = pl - 4 # 减去\n, 以及<|start_header_id|>assistant<|end_header_id|>一共四个 token
-            pl-=4
-            debug_preview_batch(self.tokenizer, c_seq[:pl], [True for _ in c_seq[:pl]], r_seq[:pl], [True for _ in r_seq[:pl]], file='out2.txt')
-            debug_preview_batch(self.tokenizer, c_seq[pl:], [True for _ in c_seq[pl:]], r_seq[pl:], [True for _ in r_seq[pl:]], file='out3.txt')
-            debug_preview_batch(self.tokenizer, c_seq, [True for _ in c_seq], r_seq, [True for _ in r_seq], file='out4.txt')
-        return prompt_len
 
     def _tok_id(self, tok_str: str) -> int:
         tid = self.tokenizer.convert_tokens_to_ids(tok_str)
@@ -797,90 +780,42 @@ class RewardModelTrainer(ABC):
         return tid
 
     def _find_last_assistant_content_span(self, valid_ids: list[int], tokenizer) -> tuple[int, int]:
-        """
-        单次扫描：返回最后一条 assistant 消息的内容区间 [content_start, content_end)（不含 EOT）。
-        若不存在，返回 (len(valid_ids), len(valid_ids))。
-        """
-        SID = self._tok_id(self.tokenizer, "<|start_header_id|>")
-        EID = self._tok_id(self.tokenizer, "<|end_header_id|>")
-        EOT = self._tok_id(self.tokenizer, "<|eot_id|>")
+        '''
+        针对的是llama 3的chat template, 找到最后一条assistant的内容区间
+        '''
+        SID = self._tok_id("<|start_header_id|>")
+        EID = self._tok_id("<|end_header_id|>")
+        EOT = self._tok_id("<|eot_id|>")
 
-        n = len(valid_ids)
-        # 维护解析 header 的状态
-        in_header = False
-        header_start = -1
+        last_header_end = -1
+        cur_header_start = -1
+        length = len(valid_ids)
+        # 扫 header
+        for i, t in enumerate(valid_ids[::-1]):
+            if t == EID and tokenizer.decode(valid_ids[::-1][i+1]).strip().lower() == 'assistant':
+                rev_header_start = i
+                content_start = len(valid_ids) - 3 - rev_header_start
+                return (content_start, length)
+        return (length, length)
 
-        # 当前候选（最近一次解析到的 assistant 头）
-        have_active = False           # 是否存在“活跃”的 assistant 段（已看到头，尚未遇到其 EOT）
-        waiting_ws = False            # 头之后是否还在跳过空白
-        current_content_start = None  # 该候选的内容起点
+    def _find_last_assistant_content_span_wo_chat_template(self, valid_ids: list[int], tokenizer) -> tuple[int, int]:
+        '''
+        针对的是llama 3的chat template, 找到最后一条assistant的内容区间
+        '''
+        mark_token = self._tok_id(":")
 
-        # 最终答案（最后一个“完成的”或到序列末尾的 assistant 段）
-        last_start = n
-        last_end = n
+        last_header_end = -1
+        cur_header_start = -1
+        length = len(valid_ids)
+        # 扫 header
+        for i, t in enumerate(valid_ids[::-1]):
+            if t == mark_token and tokenizer.decode(valid_ids[::-1][i+1]).strip().lower() == 'Assistant':
+                rev_header_start = i
+                content_start = len(valid_ids) - 2 - rev_header_start
+                return (content_start, length)
+        return (length, length)
 
-        for i, t in enumerate(valid_ids):
-            if t == SID:
-                # 新 header 开始：取消尚未完成的候选，转而解析新的 header
-                in_header = True
-                header_start = i
-                have_active = False
-                waiting_ws = False
-                current_content_start = None
-                continue
-
-            if t == EID and in_header:
-                # 结束一个 header，判断角色
-                role_text = tokenizer.decode(valid_ids[header_start + 1:i]).strip().lower()
-                in_header = False
-                if role_text == "assistant":
-                    # 激活一个候选段，随后跳空白寻找内容起点
-                    have_active = True
-                    waiting_ws = True
-                    current_content_start = None
-                else:
-                    have_active = False
-                    waiting_ws = False
-                    current_content_start = None
-                continue
-
-            # 非 SID/EID：如果有活跃候选，推进其内容区间
-            if have_active:
-                if waiting_ws:
-                    # 空白直接跳过；若 EOT 在空白期即到来，视为零长度内容（start==end==i）
-                    if t == EOT:
-                        current_content_start = i  # 与“跳空白后的索引”一致，形成空区间
-                        last_start = current_content_start
-                        last_end = i
-                        have_active = False
-                        waiting_ws = False
-                        current_content_start = None
-                        continue
-                    ch = tokenizer.decode([t])
-                    if not ch.isspace():
-                        current_content_start = i
-                        waiting_ws = False
-
-                # 已确定起点后，遇到第一个 EOT 即完成一个段
-                if not waiting_ws and current_content_start is not None and t == EOT:
-                    last_start = current_content_start
-                    last_end = i
-                    have_active = False
-                    current_content_start = None
-                    # 不清 waiting_ws（已不使用）
-
-        # 扫描结束：若还留有活跃候选但未遇到 EOT，则收尾到序列末尾
-        if have_active:
-            # 若一直在等空白且没遇到任何非空白/EOT，content_start 可能仍为 None：
-            # 将其视为“空内容在末尾”
-            if current_content_start is None:
-                current_content_start = n
-            last_start = current_content_start
-            last_end = n
-
-        # 若从未找到任何候选，返回空
-        return (last_start, last_end)
-
+            
     def extract_assistant_only_batch(self, ids: torch.Tensor, mask: torch.Tensor):
         """
         输入：
@@ -896,9 +831,9 @@ class RewardModelTrainer(ABC):
         assert ids.dim() == 2 and mask.shape == ids.shape
         device = ids.device
 
-        BOS = _tok_id(self.tokenizer, "<|begin_of_text|>")
-        EOT = _tok_id(self.tokenizer, "<|eot_id|>")
-        EOS = _tok_id(self.tokenizer, "<|end_of_text|>")
+        BOS = self._tok_id("<|begin_of_text|>")
+        EOT = self._tok_id("<|eot_id|>")
+        EOS = self._tok_id("<|end_of_text|>")
 
         pad_id = getattr(self.tokenizer, "pad_token_id", None)
         if pad_id is None:
@@ -915,12 +850,20 @@ class RewardModelTrainer(ABC):
             # 去掉左pad：保留mask==1的有效token
             valid_ids = ids[b][mask[b].bool()].tolist()
 
-            # 找最后一条assistant内容区间
-            s, e = self._find_last_assistant_content_span(valid_ids, self.tokenizer)
-            assistant_content = valid_ids[s:e]  # 可能为空
+            if self.apply_chat_template:
+                # 找最后一条assistant内容区间
+                s, e = self._find_last_assistant_content_span(valid_ids, self.tokenizer)
+                assistant_content = valid_ids[s:e]  # 可能为空
 
-            # 目标序列：BOS + content + EOT + EOS
-            new_seq = [BOS] + assistant_content + [EOT, EOS]
+                # 目标序列：BOS + content + EOT + EOS
+                new_seq = [BOS] + assistant_content
+            else:
+                # 找最后一条assistant内容区间
+                s, e = self._find_last_assistant_content_span_wo_chat_template(valid_ids, self.tokenizer)
+                assistant_content = valid_ids[s:e]  # 可能为空
+
+                # 目标序列：BOS + content + EOT + EOS
+                new_seq = assistant_content
             out_sequences.append(torch.tensor(new_seq, dtype=torch.long, device=device))
 
         # 左填充到同一长度
@@ -933,6 +876,114 @@ class RewardModelTrainer(ABC):
             new_ids[b, max_len - n:] = seq
             new_mask[b, max_len - n:] = 1
 
-        debug_preview_batch(new_ids, new_mask,file='out5.txt')
-
         return new_ids, new_mask
+
+    def build_prompt_only_mask_from_right(self, mask: torch.Tensor,
+                                        mask_R_only: torch.Tensor) -> torch.Tensor:
+        """
+        基于“从右往左对齐”的规则，把长度不同的 mask_R_only（只标注 response 的 1）
+        映射回整序列 mask 的坐标系，得到整序列上的 response 掩码，再取补集得到 prompt-only 掩码。
+
+        Args:
+            mask:         [B, L]，整序列的有效位掩码（1=该位置是有效 token，0=padding）。
+            mask_R_only:  [B, Lr]，只在 response 子序列上为 1 的掩码（1=该位置是 response token）。
+                        注意：它与 mask 长度不同，需要“从右向左”对齐。
+
+        Returns:
+            mask_P_only:  [B, L]，prompt-only 掩码（1=该位置是 prompt token，0=非 prompt 或 padding）。
+        """
+        assert mask.dim() == 2 and mask_R_only.dim() == 2, "mask/ mask_R_only 必须是 [B, L] 形状的 2D 张量"
+        B, L  = mask.shape
+        _, Lr = mask_R_only.shape
+
+        # 统一为 bool 处理更直观
+        mask_bool        = mask.to(torch.bool)
+        mask_R_only_bool = mask_R_only.to(torch.bool)
+
+        # 整序列上的 response 掩码（要构造）
+        resp_full = torch.zeros_like(mask_bool)
+
+        # 对每个 batch 样本做一次从右向左的双指针对齐：
+        # i 指向整序列 mask 的右端，j 指向 mask_R_only 的右端。
+        for b in range(B):
+            i = L  - 1
+            j = Lr - 1
+            while i >= 0 and j >= 0:
+                if not mask_bool[b, i]:
+                    # 整序列该位是 padding，跳过
+                    i -= 1
+                    continue
+                # 两端都是“有效 token”的位，进行一一对齐
+                # mask_R_only 为 1 -> 该对齐位是 response；为 0 -> 非 response（可能是 prompt）
+                if mask_R_only_bool[b, j]:
+                    resp_full[b, i] = True
+                # 两端都左移
+                i -= 1
+                j -= 1
+            # 剩下的整序列有效位（i>=0）若未匹配到 mask_R_only，默认不是 response
+
+        # prompt-only = 有效位 且 不是 response
+        mask_P_only = mask_bool & (~resp_full)
+        return mask_P_only
+
+    def sample_random_prompt_drop_masks(self, 
+                                        mask: torch.Tensor,
+                                        mask_P_only: torch.Tensor,
+                                        alpha: float,
+                                        N: int,
+                                        generator: torch.Generator | None = None):
+        """
+        在 prompt-only 掩码上随机丢弃 α 比例的 prompt 位，重复 N 次，返回 N 份“子掩码”，
+        可直接用于构造 MC 采样的 attention mask（即：把被丢弃的位置置 0）。
+
+        Args:
+            mask:         [B, L] 原始有效位掩码（1/0），其 dtype 将用于返回的 full masks。
+            mask_P_only:  [B, L] prompt-only 掩码（True/False 或 1/0）。
+            alpha:        丢弃比例，0 <= alpha <= 1。alpha=0 返回全保留；alpha=1 返回全部丢弃 prompt。
+            N:            采样次数。
+            generator:    可选的 torch.Generator（用于可复现的随机性）。
+
+        Returns:
+            full_masks_list: 长度为 N 的列表，每个元素是 [B, L]，在对应采样中，
+                            原本是 prompt 的位置有 α 比例被置为 0，其它位置保持为原 mask。
+            drop_indices_list: （可选调试）长度为 N 的列表，每个元素是一个 list，内含每个样本被丢的索引张量。
+        """
+        assert 0.0 <= alpha <= 1.0, "alpha 必须在 [0,1] 区间"
+        B, L = mask.shape
+        device = mask.device
+        dtype  = mask.dtype
+
+        Pmask = mask_P_only.to(torch.bool)
+        full_masks_list = []
+        drop_indices_list = []
+
+        # 每次构造一份子掩码
+        for _ in range(N):
+            # 复制原始 mask（保持非 prompt 与 padding 不变）
+            full_mask_t = mask.clone()
+
+            # 逐样本决定要丢哪些 prompt 位置（数量 = floor(alpha * #prompt_tokens)）
+            per_sample_drop_idxs = []
+            for b in range(B):
+                prompt_positions = torch.nonzero(Pmask[b], as_tuple=False).flatten()  # [num_prompt_b]
+                num_prompt = prompt_positions.numel()
+                if num_prompt == 0 or alpha == 0.0:
+                    per_sample_drop_idxs.append(torch.empty(0, dtype=torch.long, device=device))
+                    continue
+
+                k = int(num_prompt * alpha)
+                if k <= 0:
+                    per_sample_drop_idxs.append(torch.empty(0, dtype=torch.long, device=device))
+                    continue
+
+                # 随机选 k 个 prompt 索引丢弃
+                perm = torch.randperm(num_prompt, generator=generator, device=device)
+                to_drop_local = prompt_positions[perm[:k]]  # 这些是整句的绝对位置
+                # 在 full_mask_t 中把这些位置置 0（丢弃）
+                full_mask_t[b, to_drop_local] = 0 if dtype != torch.bool else False
+                per_sample_drop_idxs.append(to_drop_local)
+
+            full_masks_list.append(full_mask_t)
+            drop_indices_list.append(per_sample_drop_idxs)
+
+        return full_masks_list, drop_indices_list

@@ -30,7 +30,7 @@ def train(args):
         target_modules=args.target_modules,
         lora_dropout=args.lora_dropout,
         ds_config=strategy.get_ds_train_config(is_actor=False),
-        init_value_head=True,
+        init_value_head=False,
         value_head_prefix=args.value_head_prefix,
         packing_samples=args.packing_samples,
     )
@@ -42,37 +42,33 @@ def train(args):
 
     # configure optimizer
     optim = strategy.create_optimizer(model, lr=args.learning_rate, betas=args.adam_betas, weight_decay=args.l2)
-
-    # prepare for data and dataset
-    train_data = blending_datasets(
+    
+    eval_data = blending_datasets(
         args.dataset,
         args.dataset_probs,
         strategy,
         args.seed,
         max_count=args.max_samples,
-        dataset_split=args.dataset_split,
+        dataset_split=args.eval_split,
     )
 
-    train_data = train_data.select(range(min(args.max_samples, len(train_data))))
-    train_dataset = RewardDataset(
-        train_data,
+    eval_dataset = RewardDataset(
+        eval_data,
         tokenizer,
         args.max_len,
         strategy,
         input_template=args.input_template,
     )
-
-    # prepare dataloader
-    train_dataloader = strategy.setup_dataloader(
-        train_dataset,
+    eval_dataloader = strategy.setup_dataloader(
+        eval_dataset,
         args.micro_train_batch_size,
         True,
-        True,
-        train_dataset.collate_fn,
+        False,
+        eval_dataset.collate_fn,
     )
 
     # scheduler
-    num_update_steps_per_epoch = len(train_dataset) // args.train_batch_size
+    num_update_steps_per_epoch = len(eval_dataset) // args.train_batch_size
     max_steps = math.ceil(args.max_epochs * num_update_steps_per_epoch)
 
     scheduler = get_scheduler(
@@ -93,11 +89,11 @@ def train(args):
     (model, optim, scheduler) = strategy.prepare((model, optim, scheduler))
 
     # load checkpoint
-    consumed_samples = 0
-    if args.load_checkpoint and os.path.exists(args.ckpt_path):
-        _, states = strategy.load_ckpt(model, args.ckpt_path)
-        consumed_samples = states["consumed_samples"]
-        strategy.print(f"Loaded the checkpoint: {args.ckpt_path}, consumed_samples: {consumed_samples}")
+    # consumed_samples = 0
+    # if args.load_checkpoint and os.path.exists(args.ckpt_path):
+    #     _, states = strategy.load_ckpt(model, args.ckpt_path)
+    #     consumed_samples = states["consumed_samples"]
+    #     strategy.print(f"Loaded the checkpoint: {args.ckpt_path}, consumed_samples: {consumed_samples}")
 
     # batch_size here is micro_batch_size * 2
     # we use merged chosen + rejected response forward
@@ -148,7 +144,7 @@ def train(args):
     #     False,
     #     eval_dataset.collate_fn,
     # )
-    trainer.evaluate(train_dataloader, 0, model_name=args.pretrain.split('/')[-1], data_name=args.dataset.split('/')[-1], eval_result_path=args.dataset.split('/')[-1])
+    trainer.evaluate(eval_dataloader, 0, model_name=args.pretrain.split('/')[-1], data_name=args.dataset.split('/')[-2], eval_result_path=args.dataset.split('/')[-2])
 
     # Save value_head_prefix
     strategy.print("Save value_head_prefix in config")
